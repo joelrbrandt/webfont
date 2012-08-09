@@ -1,0 +1,58 @@
+<html>
+<head>
+    <script>
+        /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
+        /*global location */
+        (function () {
+            "use strict";
+            var originalWidth = -1,
+                font,
+                example,
+                watcherTimer = null;
+            
+            function makeFontURL(font) {
+                var apiUrl = [];
+                apiUrl.push('http://fonts.googleapis.com/css?family=');
+                apiUrl.push(font.family.replace(/ /g, '+'));
+    
+                // url: '//fonts.googleapis.com/css?family=Anonymous+Pro:bold&subset=greek'
+                return apiUrl.join('');
+            }
+            
+            function watcher() {
+                if (originalWidth > 0 && example.offsetWidth !== originalWidth) {
+                    clearInterval(watcherTimer);
+                    example.setAttribute('style', 'font-family: "' + font.family + '";');
+                    var loading = document.getElementById('loading');
+                    loading.parentNode.removeChild(loading);
+                }
+            }
+            
+            window.onload = function () {
+                var css = document.createElement("link"),
+                    name = document.getElementById("name");
+                
+                font = JSON.parse(decodeURIComponent(location.search.substr(1)));
+                
+                css.setAttribute("rel", "stylesheet");
+                css.setAttribute("type", "text/css");
+                css.setAttribute("href", makeFontURL(font));
+                document.head.appendChild(css);
+                
+                name.textContent = font.family;
+            
+                example = document.getElementById("example");
+                originalWidth = example.offsetWidth;
+                example.setAttribute('style', 'font-size: 100000%; font-family: "' + font.family + '", Arial; visibility: hidden;');
+    
+                watcherTimer = setInterval(watcher, 10);
+            };
+        }());
+    </script>
+</head>
+<body>
+    <p id="name"></p>
+    <p id="loading">Loading...</p>
+    <p><span id="example" style="font-size: 100000%; font-family: Arial; visibility: hidden;">Jackdaws love my big sphynx of quartz</span></p>
+</body>
+</html>
